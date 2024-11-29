@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Bulletin Board</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        .post { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .post h3 { margin: 0; }
+    </style>
+</head>
+<body>
+    <h1>Community Bulletin Board</h1>
+    <form id="postForm">
+        <input type="text" id="title" placeholder="Title" required><br><br>
+        <textarea id="description" placeholder="Description" required></textarea><br><br>
+        <input type="text" id="posterName" placeholder="Your Name" required><br><br>
+        <button type="submit">Post</button>
+    </form>
+    <div id="posts"></div>
+
+    <script>
+        // Function to load posts from localStorage
+        function loadPosts() {
+            const posts = JSON.parse(localStorage.getItem('communityPosts') || '[]');
+            const postsContainer = document.getElementById('posts');
+            postsContainer.innerHTML = posts.map(post => `
+                <div class="post">
+                    <h3>${post.title}</h3>
+                    <p>${post.description}</p>
+                    <small>Posted by: ${post.posterName} on ${new Date(post.date).toLocaleString()}</small>
+                </div>
+            `).join('');
+        }
+
+        // Add a new post
+        document.getElementById('postForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const posterName = document.getElementById('posterName').value;
+
+            const post = { title, description, posterName, date: new Date().toISOString() };
+
+            const posts = JSON.parse(localStorage.getItem('communityPosts') || '[]');
+            posts.unshift(post); // Add the new post at the beginning
+            localStorage.setItem('communityPosts', JSON.stringify(posts));
+
+            // Clear the form and reload posts
+            document.getElementById('postForm').reset();
+            loadPosts();
+        });
+
+        // Load posts on page load
+        loadPosts();
+    </script>
+</body>
+</html>
